@@ -9,11 +9,11 @@ dotenv.config();
 const registerUser = async (req, res) => {
   const newUser = User({
     fullname: req.body.fullname,
-    email: req.body.fullname,
+    email: req.body.email,
     age: req.body.age,
     country: req.body.country,
     address: req.body.address,
-    password: Crypto.AES.encrypt(
+    password: CryptoJs.AES.encrypt(
       req.body.password,
       process.env.PASS
     ).toString(),

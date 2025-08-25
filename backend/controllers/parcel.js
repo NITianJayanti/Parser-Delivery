@@ -4,11 +4,13 @@ const Parcel = require("../models/parcel.model");
 
 const createParcel = async (req, res) => {
   try {
-    const newParcel = Parcel(req.body);
-    const parcel = await newParcel.save();
+    console.log("Incoming body:", req.body);
+    const parcel = new Parcel(req.body);
+    await parcel.save();
     res.status(201).json(parcel);
   } catch (error) {
-    res.status(500).json(error);
+    console.error("Parcel creation error:", error);
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -26,10 +28,20 @@ const getAllParcels = async (req, res) => {
 // update the parcel
 const updateParcel = async (req, res) => {
   try {
-    const parcel = await Parcel.findById(req.params.id);
-    res.status(201).json(parcel);
+    const parcel = await Parcel.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body }, // updates only provided fields
+      { new: true, runValidators: true } // return updated doc
+    );
+
+    if (!parcel) {
+      return res.status(404).json({ message: "Parcel not found" });
+    }
+
+    res.status(200).json(parcel);
   } catch (error) {
-    res.status(500).json(error);
+    console.error("Update error:", error);
+    res.status(500).json({ message: error.message });
   }
 };
 
